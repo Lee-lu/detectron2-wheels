@@ -16,15 +16,14 @@ jobs:
       
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: '3.12'
       
       - name: Build wheel
         run: |
-          pip install torch torchvision --index-url https://download.pytorch.org/whl/cu129
+          pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
           pip install setuptools wheel ninja
-          git clone https://github.com/facebookresearch/detectron2.git /tmp/d2
-          cd /tmp/d2 && pip wheel . -w /tmp/wheels --no-build-isolation
-          cd /tmp/wheels && for f in detectron2-*.whl; do mv "$f" "$(echo $f | sed 's/detectron2-\([^-]*\)-/detectron2-\1+cu129-/')"; done
+          pip install git+https://github.com/facebookresearch/detectron2.git@a1ce2f9 --no-build-isolation --no-deps
+          cd /tmp/wheels && for f in detectron2-*.whl; do mv "$f" "$(echo $f | sed 's/detectron2-\([^-]*\)-/detectron2-\1+cu128-/')"; done
       
       - uses: actions/upload-artifact@v4
         with:
@@ -43,14 +42,13 @@ jobs:
       
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: '3.12'
       
       - name: Build wheel
         run: |
           pip install torch torchvision --index-url https://download.pytorch.org/whl/rocm6.4
           pip install setuptools wheel ninja
-          git clone https://github.com/facebookresearch/detectron2.git /tmp/d2
-          cd /tmp/d2 && pip wheel . -w /tmp/wheels --no-build-isolation
+          pip install git+https://github.com/facebookresearch/detectron2.git@a1ce2f9 --no-build-isolation --no-deps
           cd /tmp/wheels && for f in detectron2-*.whl; do mv "$f" "$(echo $f | sed 's/detectron2-\([^-]*\)-/detectron2-\1+rocm64-/')"; done
       
       - uses: actions/upload-artifact@v4
@@ -63,7 +61,7 @@ jobs:
     steps:
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: '3.12'
       
       - uses: ilammy/msvc-dev-cmd@v1
         with:
@@ -71,14 +69,12 @@ jobs:
       
       - name: Build wheel
         run: |
-          pip install torch torchvision --index-url https://download.pytorch.org/whl/cu129
+          pip install torch==2.7.1 torchvision==0.22.1 --index-url https://download.pytorch.org/whl/cu128
           pip install setuptools wheel ninja
-          git clone https://github.com/facebookresearch/detectron2.git C:\d2
-          cd C:\d2
           $env:DISTUTILS_USE_SDK = "1"
-          pip wheel . -w C:\wheels --no-build-isolation
+          pip install git+https://github.com/facebookresearch/detectron2.git@a1ce2f9 --no-build-isolation --no-deps
           cd C:\wheels
-          Get-ChildItem detectron2-*.whl | Rename-Item -NewName { $_.Name -replace 'detectron2-([^-]+)-', 'detectron2-$1+cu129-' }
+          Get-ChildItem detectron2-*.whl | Rename-Item -NewName { $_.Name -replace 'detectron2-([^-]+)-', 'detectron2-$1+cu128-' }
         shell: pwsh
       
       - uses: actions/upload-artifact@v4
@@ -103,5 +99,5 @@ jobs:
       - uses: softprops/action-gh-release@v1
         with:
           tag_name: latest
-          name: Detectron2 Wheels (Python 3.13)
+          name: Detectron2 Wheels (Python 3.12)
           files: wheels/*.whl
