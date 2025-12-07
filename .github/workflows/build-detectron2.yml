@@ -22,8 +22,8 @@ jobs:
         run: |
           pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
           pip install setuptools wheel ninja
-          git+https://github.com/facebookresearch/detectron2.git  /tmp/d2
-          cd /tmp/d2 && pip wheel . -w /tmp/wheels --no-build-isolation
+          git clone https://github.com/facebookresearch/detectron2.git  /tmp/d2
+          cd /tmp/d2 && git checkout a1ce2f9 && pip wheel . -w /tmp/wheels --no-build-isolation
           cd /tmp/wheels && for f in detectron2-*.whl; do mv "$f" "$(echo $f | sed 's/detectron2-\([^-]*\)-/detectron2-\1+cu128-/')"; done
       
       - uses: actions/upload-artifact@v4
@@ -50,7 +50,7 @@ jobs:
           pip install torch torchvision --index-url https://download.pytorch.org/whl/rocm6.4
           pip install setuptools wheel ninja
           git clone https://github.com/facebookresearch/detectron2.git /tmp/d2
-          cd /tmp/d2 && pip wheel . -w /tmp/wheels --no-build-isolation
+          cd /tmp/d2 && git checkout a1ce2f9 && pip wheel . -w /tmp/wheels --no-build-isolation
           cd /tmp/wheels && for f in detectron2-*.whl; do mv "$f" "$(echo $f | sed 's/detectron2-\([^-]*\)-/detectron2-\1+rocm64-/')"; done
       
       - uses: actions/upload-artifact@v4
@@ -74,7 +74,8 @@ jobs:
           pip install torch==2.7.1 torchvision==0.22.1 --index-url https://download.pytorch.org/whl/cu128
           pip install setuptools wheel ninja
           git clone https://github.com/facebookresearch/detectron2.git C:\d2
-          cd C:\d2
+          cd C:\d2 
+          git checkout a1ce2f9
           $env:DISTUTILS_USE_SDK = "1"
           pip wheel . -w C:\wheels --no-build-isolation
           cd C:\wheels
