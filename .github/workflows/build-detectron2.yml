@@ -73,11 +73,8 @@ jobs:
         run: |
           pip install torch==2.7.1 torchvision==0.22.1 --index-url https://download.pytorch.org/whl/cu128
           pip install setuptools wheel ninja
-          git clone https://github.com/facebookresearch/detectron2.git C:\d2
-          cd C:\d2 
-          git checkout a1ce2f9
           $env:DISTUTILS_USE_SDK = "1"
-          pip wheel . -w C:\wheels --no-build-isolation
+          pip wheel git+https://github.com/facebookresearch/detectron2.git@a1ce2f9 --no-build-isolation --no-deps -w C:\wheels
           cd C:\wheels
           Get-ChildItem detectron2-*.whl | Rename-Item -NewName { $_.Name -replace 'detectron2-([^-]+)-', 'detectron2-$1+cu128-' }
         shell: pwsh
